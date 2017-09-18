@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>index</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!-- ZUI 标准版压缩后的 CSS 文件 -->
+    <link rel="stylesheet" href="dists/css/zui.min.css">
+    <link rel="stylesheet" href="dists/css/zui-theme.css">
+    <link href="dists/lib/dashboard/zui.dashboard.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar" role="navigation" id="header">
+        <div class="container" style="margin-top:1%">
+            <!-- 导航头部 -->
+            <div class="navbar-header">
+                <!-- 移动设备上的导航切换按钮 -->
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-example">
+                        <span class="sr-only">切换导航</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                <!-- 品牌名称或logo -->
+                <a class="navbar-brand" href="index">BDI 管理系统</a>
+            </div>
+            <!-- 导航项目 -->
+            <div class="collapse navbar-collapse navbar-collapse-example">
+                <!-- 一般导航项目 -->
+                <ul class="nav navbar-nav">
+                    <li><a href="#">大数据</a></li>
+                    <li><a href="#">可视化</a></li>
+                    <!-- 导航中的下拉菜单 -->
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">存储系统 <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">oracle</a></li>
+                            <li><a href="#">mysql</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- 导航中的表单 -->
+                <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="搜索">
+                    </div>
+                    <button type="submit" class="btn btn-default">搜索</button>
+                </form>
+                <!-- 右侧的导航项目 -->
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/admin">管理</a></li>
+                    <li class="dropdown">
+                        <a href="your/nice/url" class="dropdown-toggle" data-toggle="dropdown">用户 <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="your/nice/url">敏捷开发</a></li>
+                            <li><a href="your/nice/url">HTML5</a></li>
+                            <li><a href="your/nice/url">Javascript</a></li>
+                            <li class="divider"></li>
+                            <li><a href="your/nice/url">探索宇宙</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- END .navbar-collapse -->
+        </div>
+    </nav>
+
+    <div class="container" id="sidebar">
+        <nav class="menu col-lg-3 pull-left" data-ride="menu">
+            <ul class="nav nav-primary">
+                <li class="active"><a href="index.html"><i class="icon icon-th"></i> 首页</a></li>
+                <li><a href="javascript:;"><i class="icon icon-user"></i> 控制台</a></li>
+                <li class="nav-parent">
+                    <a href="javascript:;"><i class="icon icon-time"></i> 日志</a>
+                    <ul class="nav">
+                        <li><a href="javascript:;">Today</a></li>
+                        <li><a href="javascript:;">Tomarrow</a></li>
+                        <li><a href="javascript:;">Yestorday</a></li>
+                        <li><a href="javascript:;">This Week</a></li>
+                    </ul>
+                </li>
+                <li><a href="javascript:;"><i class="icon icon-info"></i> 密码库</a></li>
+                <li><a href="huanping_input"><i class="icon icon-edit"></i> 环评报告</a></li>
+                <li class="nav-parent">
+                    <a href="javascript:;"><i class="icon icon-tasks"></i> Status</a>
+                    <ul class="nav">
+                        <li><a href="javascript:;"><i class="icon icon-circle-blank"></i> Ready</a></li>
+                        <li><a href="javascript:;"><i class="icon icon-play-sign"></i> Ongoing</a></li>
+                        <li><a href="javascript:;"><i class="icon icon-ok-sign"></i> Completed</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div class="col-lg-9 col-md-12 col-sm-12" style="height:100%" id="content">
+            <div id="dashboard" class="dashboard dashboard-draggable" data-height="300">
+                <section class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="panel" data-id="1">
+                            <div class="panel-heading">
+                                <i class="icon icon-list"></i>
+                                <span class="title">集群运行状态</span>
+                            </div>
+                            <div class="panel-body">
+                                <p>node001</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="panel" data-id="2">
+                            <div class="panel-heading">
+                                <i class="icon icon-list"></i>
+                                <span class="title">包含列表组</span>
+                            </div>
+                            <div class="panel-body no-padding">
+                                <div class="list-group">
+                                    ...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="panel" data-id="3">
+                            <div class="panel-heading">
+                                <i class="icon icon-table"></i>
+                                <span class="title">包含表格</span>
+                            </div>
+                            <div class="panel-body no-padding">
+                                <table class="table">
+                                    ...
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="panel" data-id="4">
+                            <div class="panel-heading">
+                                <i class="icon icon-bolt"></i>
+                                <span class="title">包含操作按钮</span>
+                                <div class="panel-actions">
+                                    <a href="###" data-toggle="tooltip" title="编辑"><i class="icon-pencil"></i></a>
+                                    <button type="button" class="btn" data-toggle="tooltip" title="收藏"><i class="icon-heart-empty"></i></button>
+                                    <div class="dropdown" data-toggle="tooltip" title="更多操作">
+                                        <button class="btn" data-toggle="dropdown" type="button"><i class="icon icon-ellipsis-v"></i></button>
+                                        <ul class="dropdown-menu pull-right">
+                                            <li><a href="###"><i class="icon icon-ok"></i> 确认</a></li>
+                                            <li><a href="###"><i class="icon icon-thumbs-o-up"></i> 自定义操作</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <p>在面板头部（<code>.panel-heading</code>）包含链接和按钮来自定义操作。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="panel" data-id="5" data-url="docs/partial/remote-panel.html">
+                            <div class="panel-heading">
+                                <i class="icon icon-globe"></i>
+                                <span class="title">加载远程内容</span>
+                                <div class="panel-actions">
+                                    <button type="button" class="btn refresh-panel" data-toggle="tooltip" title="重新从远程获取内容"><i class="icon-refresh"></i></button>
+                                </div>
+                            </div>
+                            <div class="panel-body">等待加载远程内容。</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="panel" data-id="6">
+                            <div class="panel-heading">
+                                <div class="title">可移除的面板</div>
+                                <div class="panel-actions">
+                                    <button type="button" class="btn remove-panel" data-toggle="tooltip" title="移除面板"><i class="icon-remove"></i></button>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <p>点击顶部右侧的 <i class="icon icon-remove"></i> 按钮来移除该面板。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-6">
+                        <div class="panel panel-loading" data-id="6">
+                            <div class="panel-heading"><code>.panel-loading</code></div>
+                            <div class="panel-body">
+                                <p>为 <code>.panel</code> 添加 <code>.panel-loading</code> 类即可实现正在加载的外观。</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- ZUI Javascript 依赖 jQuery -->
+    <script src="dists/lib/jquery/jquery.js"></script>
+    <!-- ZUI 标准版压缩后的 JavaScript 文件 -->
+    <script src="dists/js/zui.min.js"></script>
+    <script src="dists/lib/dashboard/zui.dashboard.min.js"></script>
+    <script>
+        $('#dashboard').dashboard({ draggable: true });
+    </script>
+</body>
+
+</html>
