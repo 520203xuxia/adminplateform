@@ -19,14 +19,13 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static cn.edu.szu.bigdata.service.GridFsService.*;
 import static cn.edu.szu.bigdata.util.CommonUtils.getHash256;
 import static cn.edu.szu.bigdata.util.CommonUtils.getMd5;
 import static cn.edu.szu.bigdata.util.constant.defalutContentType;
-import static cn.edu.szu.bigdata.util.constant.office_online_addr;
+import static cn.edu.szu.bigdata.util.constant.getOffice_online_addr;
 
 /**
  * Created by longhao on 2017/9/4.
@@ -56,7 +55,7 @@ public class DocumentController {
         String filenameMd5 = createNewEmptyDocFileToGridFs(project_name, defalutContentType);
 //        model.addAttribute("segmentEntityListMap",segmentEntityListMap);
         model.addAttribute("filenameMd5",filenameMd5);
-        model.addAttribute("office_online_addr",office_online_addr);
+        model.addAttribute("office_online_addr",getOffice_online_addr());
         model.addAttribute("reportEntity",reportEntity);
         model.addAttribute("user",user);
         return "edit";
@@ -88,7 +87,7 @@ public class DocumentController {
             metaData.put("sha256",sha256);
             metaData.put("filename",filename);
             updateFileToGridFs(filenameMd5,defalutContentType,metaData,contents);
-            return office_online_addr+"/wopi/files/"+filenameMd5;
+            return getOffice_online_addr()+"/wopi/files/"+filenameMd5;
         }
     }
 
@@ -154,8 +153,8 @@ public class DocumentController {
     @GetMapping("show/{docname}/{name}")
     public String showPdf(Model model,@PathVariable("docname") String docname,@PathVariable("name") String name){
         model.addAttribute("name",name);
-        System.out.println(office_online_addr+docname);
-        model.addAttribute("docurl",office_online_addr+docname);
+        System.out.println(getOffice_online_addr()+docname);
+        model.addAttribute("docurl",getOffice_online_addr()+docname);
         return "pdfpage";
     }
 
