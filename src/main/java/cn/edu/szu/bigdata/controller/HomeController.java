@@ -1,6 +1,8 @@
 package cn.edu.szu.bigdata.controller;
 
 import cn.edu.szu.bigdata.model.User;
+import org.apache.catalina.Session;
+import org.apache.ibatis.jdbc.Null;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.LockedAccountException;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * Created by yangqj on 2017/4/21.
@@ -66,12 +69,42 @@ public class HomeController {
     }
 
     @RequestMapping(value = {"/index",""})
-    public String index(){
+    public String index(HttpServletRequest request,Model model){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        model.addAttribute("user",user);
         return "index";
     }
 
     @RequestMapping("/huanping_input")
-    public String huanping_input(){
+    public String huanping_input(HttpServletRequest request,Model model){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        model.addAttribute("user",user);
         return "huanping_input";
+    }
+
+    @RequestMapping("/admin/myuser")
+    public String myuser(HttpServletRequest request,Model model){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        model.addAttribute("user",user);
+        return "admin/user";
+    }
+
+    @RequestMapping("/admin/myrole")
+    public String myrole(HttpServletRequest request,Model model){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        model.addAttribute("user",user);
+        return "admin/role";
+    }
+
+    @RequestMapping("/admin/myresource")
+    public String myresource(HttpServletRequest request,Model model){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        model.addAttribute("user",user);
+        return "admin/resource";
     }
 }

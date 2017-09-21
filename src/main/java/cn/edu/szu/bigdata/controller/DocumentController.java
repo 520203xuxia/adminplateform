@@ -3,6 +3,7 @@ package cn.edu.szu.bigdata.controller;
 import cn.edu.szu.bigdata.entity.FragmentEntity;
 import cn.edu.szu.bigdata.entity.ReportEntity;
 import cn.edu.szu.bigdata.entity.SegmentEntity;
+import cn.edu.szu.bigdata.model.User;
 import cn.edu.szu.bigdata.service.DocumentService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -48,13 +50,15 @@ public class DocumentController {
         String project_name=request.getParameter("project_name");
         ReportEntity reportEntity=new ReportEntity(project_name,cmbProvince,cmbCity,domain);
 //        HashMap<SegmentEntity,List<SegmentEntity>> segmentEntityListMap=documentService.getAllSegments();
-
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
         //编写的新文档属性
         String filenameMd5 = createNewEmptyDocFileToGridFs(project_name, defalutContentType);
 //        model.addAttribute("segmentEntityListMap",segmentEntityListMap);
         model.addAttribute("filenameMd5",filenameMd5);
         model.addAttribute("office_online_addr",office_online_addr);
         model.addAttribute("reportEntity",reportEntity);
+        model.addAttribute("user",user);
         return "edit";
     }
 

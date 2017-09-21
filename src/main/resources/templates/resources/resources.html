@@ -154,7 +154,7 @@
             "serverSide": true,//开启服务器模式，使用服务器端处理配置datatable
             "processing": true,//开启读取服务器数据时显示正在加载中……特别是大数据量的时候，开启此功能比较好
 
-            "ajax": 'resources',
+            "ajax": '/resources',
             "columns": [
                 {
                     "sClass": "text-center",
@@ -233,7 +233,7 @@
         $.ajax({
             cache: true,
             type: "POST",
-            url:'resources/add',
+            url:'/resources/add',
             data:$('#resourcesForm').serialize(),// 你的formid
             async: false,
             success: function(data) {
@@ -267,7 +267,7 @@
             $.ajax({
                 cache: true,
                 type: "POST",
-                url:'resources/delete',
+                url:'/resources/delete',
                 data:{id:id},
                 async: false,
                 success: function(data) {

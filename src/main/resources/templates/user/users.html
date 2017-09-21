@@ -167,7 +167,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: 'users',
+                    url: '/users',
                     cache : false,  //禁用缓存
                     data: param,    //传入已封装的参数
                     dataType: "json",
@@ -279,7 +279,7 @@
         $.ajax({
             cache: true,
             type: "POST",
-            url:'users/saveUserRoles',
+            url:'/users/saveUserRoles',
             data:$('#boxRoleForm').serialize(),// 你的formid
             async: false,
             success: function(data) {
@@ -313,7 +313,7 @@
         $.ajax({
             cache: true,
             type: "POST",
-            url:'users/add',
+            url:'/users/add',
             data:$('#userForm').serialize(),// 你的formid
             async: false,
             success: function(data) {
@@ -350,7 +350,7 @@
             $.ajax({
                 cache: true,
                 type: "POST",
-                url:'users/delete',
+                url:'/users/delete',
                 data:{id:id},
                 async: false,
                 success: function(data) {

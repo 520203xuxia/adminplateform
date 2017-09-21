@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+
+<head>
+    <title>资源管理</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!-- ZUI 标准版压缩后的 CSS 文件 -->
+    <link rel="stylesheet" th:href="@{/dists/css/zui.min.css}">
+    <link th:href="@{/dists/lib/bootbox/bootbox.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/dists/css/zui-theme.css}">
+    <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}" />
+</head>
+
+<body>
+<nav class="navbar" role="navigation" id="header">
+    <div class="container-fluid" style="margin-top:1%">
+        <!-- 导航头部 -->
+        <div class="navbar-header">
+            <!-- 移动设备上的导航切换按钮 -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-example">
+                <span class="sr-only">切换导航</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <!-- 品牌名称或logo -->
+            <a class="navbar-brand" href="/index">BDI 管理系统</a>
+        </div>
+        <!-- 导航项目 -->
+        <div class="collapse navbar-collapse navbar-collapse-example">
+            <!-- 一般导航项目 -->
+            <ul class="nav navbar-nav">
+                <li><a href="http://172.31.238.102:7180">平台监控</a></li>
+                <li><a href="http://172.31.238.138:8989">可视化</a></li>
+                <li><a href="http://172.31.238.138:8000">spark</a></li>
+                <li><a href="http://172.31.238.103:8787">R studio</a></li>
+                <!-- 导航中的下拉菜单 -->
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">存储系统 <b class="caret"></b></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="http://172.31.238.142">owncloud</a></li>
+                        <li><a href="#">mysql</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- 导航中的表单 -->
+            <form class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="搜索">
+                </div>
+                <button type="submit" class="btn btn-default">搜索</button>
+            </form>
+            <!-- 右侧的导航项目 -->
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/admin">管理</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><span th:text="${user.username}">用户</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">个人资料</a></li>
+                        <li><a href="#">帮助</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/logout">退出</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- END .navbar-collapse -->
+    </div>
+</nav>
+
+<div class="container-fluid" id="sidebar">
+    <nav class="menu col-lg-2 pull-left" data-ride="menu">
+        <ul class="nav nav-primary">
+            <li><a href="/index"><i class="icon icon-th"></i> 首页</a></li>
+            <li><a href="javascript:;"><i class="icon icon-user"></i> 控制台</a></li>
+            <li class="nav-parent">
+                <a href="javascript:;"><i class="icon icon-time"></i> 日志</a>
+                <ul class="nav">
+                    <li><a href="javascript:;">Today</a></li>
+                    <li><a href="javascript:;">Tomarrow</a></li>
+                    <li><a href="javascript:;">Yestorday</a></li>
+                    <li><a href="javascript:;">This Week</a></li>
+                </ul>
+            </li>
+            <li><a href="javascript:;"><i class="icon icon-info"></i> 密码库</a></li>
+            <li><a href="/huanping_input"><i class="icon icon-edit"></i> 环评报告</a></li>
+            <li class="active show nav-parent">
+                <a href="javascript:;"><i class="icon icon-tasks"></i> 用户角色资源管理</a>
+                <ul class="nav">
+                    <li><a href="/admin/myuser"><i class="icon icon-circle-blank"></i> 用户管理</a></li>
+                    <li><a href="/admin/myrole"><i class="icon icon-play-sign"></i> 角色管理</a></li>
+                    <li class="active"><a href="/admin/myresource"><i class="icon icon-ok-sign"></i> 资源管理</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div class="col-lg-10 col-md-12 col-sm-12" style="height:100%" id="content">
+        <ol class="breadcrumb">
+            <li><i class="icon-home"></i><a href="index">  主页</a></li>
+            <li class="active">资源表</li>
+        </ol>
+        <hr/>
+        <div class="container-fluid">
+            <div class="panel">
+                <div class="panel-heading">
+                    <i class="icon-th"> 资源列表</i>
+                </div>
+                <hr/>
+                <div>
+                    <form class="form-inline">
+                        <button type="button" shiro:hasPermission="/resources/add" onclick="$('#resourcesModal').modal();" class="btn btn-primary" style="float: right; margin-right: 1px;">新增</button>
+                        <button type="button" shiro:hasPermission="/resources/delete" onclick="delById();" class="btn btn-primary" style="float: right; margin-right: 1px;">删除</button>
+                    </form>
+                    <table class="table table-bordered data-table" id="datatable" >
+                        <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" class="checkall" />
+                            </th>
+                            <th>ID</th>
+                            <th>资源名称</th>
+                            <th>父资源</th>
+                            <th>资源链接</th>
+                            <th>资源类型</th>
+                            <th>排序</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!--弹框-->
+    <div class="modal fade bs-example-modal-sm"  id="selectResources" tabindex="-1" role="dialog" aria-labelledby="selectRoleLabel">
+        <div class="modal-dialog modal-sm" role="document" style="height: 600px; "  >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="selectRoleLabel">分配权限</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="boxRoleForm" >
+                        <ul id="treeDemo" class="ztree"></ul>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="saveRoleResources();" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--弹框-->
+
+
+    <!--添加弹框-->
+    <div class="modal fade" id="resourcesModal" tabindex="-1" role="dialog" aria-labelledby="addroleLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="addroleLabel">添加资源</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="resourcesForm">
+                        <div class="form-group">
+                            <label  class="control-label">资源名称:</label>
+                            <input type="text" class="form-control" name="name" id="name" placeholder="请输入资源名称"/>
+                        </div>
+                        <div class="form-group">
+                            <label  class="control-label">父资源ID:</label>
+                            <input type="text" class="form-control" id="parentId" name="parentid"  placeholder="请输入父资源ID">
+                        </div>
+                        <div class="form-group">
+                            <label  class="control-label">资源链接:</label>
+                            <input type="text" class="form-control" id="resUrl" name="resurl"  placeholder="请输入资源链接">
+                        </div>
+                        <div class="form-group">
+                            <label  class="control-label">资源类型:</label>
+                            <select class="form-control" name="type" id="type" >
+                                <option value="1">菜单</option>
+                                <option value="2">按钮</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">排序:</label>
+                            <input type="text" class="form-control" id="sort" name="sort"  placeholder="请输入排序">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="addResources();" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/添加弹框-->
+
+
+<!-- ZUI Javascript 依赖 jQuery -->
+<script th:src="@{/dists/lib/jquery/jquery.js}"></script>
+<!-- ZUI 标准版压缩后的 JavaScript 文件 -->
+<script th:src="@{/dists/js/zui.min.js}"></script>
+<script th:src="@{/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/dists/lib/bootbox/bootbox.js}"></script>
+<script th:src="@{/js/layer.js}"></script>
+    <script type="text/javascript">
+        var table;
+        $(".checkall").click(function () {
+            var check = $(this).prop("checked");
+            $(".checkchild").prop("checked", check);
+        });
+        $(document).ready(function() {
+            table = $('#datatable').DataTable( {
+                "dom": '<"top"i>rt<"bottom"flp><"clear">',
+                "searching" : false,
+                "JQueryUI": true,
+                "sPaginationType": "full_numbers",
+                "serverSide": true,//开启服务器模式，使用服务器端处理配置datatable
+                "processing": true,//开启读取服务器数据时显示正在加载中……特别是大数据量的时候，开启此功能比较好
+
+                "ajax": '/resources',
+                "columns": [
+                    {
+                        "sClass": "text-center",
+                        "data": "id",
+                        "render": function (data, type, full, meta) {
+                            return '<input type="checkbox"  class="checkchild"  value="' + data + '" />';
+                        },
+                        "bSortable": false
+                    },
+                    { "data": "id" },
+                    { "data": "name" },
+                    { "data": "parentid" },
+                    { "data": "resurl" },
+                    { "data": "type" },
+                    { "data": "sort" },
+                ],
+                columnDefs:[
+                    { "orderable": false, "targets": 1 },
+                    { "orderable": false, "targets": 2 },
+                    { "orderable": false, "targets": 3 },
+                    { "orderable": false, "targets": 4 },
+                    {
+                        "orderable": false,
+                        "render": function(data, type, row) {
+                            if(data==1){
+                                return "菜单";
+                            }else if(data==2){
+                                return "按钮";
+                            }else{
+                                return "其他";
+                            }
+                        },
+                        "targets": 5
+                    },
+                    { "orderable": false, "targets": 6 }
+                ],
+
+            } );
+
+
+
+        } );
+
+        function search(){
+            table.ajax.reload();
+        }
+
+        //添加用户
+        function addResources() {
+            var name = $("#name").val();
+            var parentId = $("#parentId").val();
+            var resUrl = $("#resUrl").val();
+            var sort = $("#sort").val();
+
+            if(name == "" || name == undefined || name == null){
+                return layer.msg('资源名称不能为空', function(){
+                    //关闭后的操作
+                });
+            }
+            if(parentId == "" || parentId == undefined || parentId == null){
+                return layer.msg('父资源id不能为空', function(){
+                    //关闭后的操作
+                });
+            }
+            if(resUrl == "" || resUrl == undefined || resUrl == null){
+                return layer.msg('资源链接不能为空', function(){
+                    //关闭后的操作
+                });
+            }
+            if(sort == "" || sort == undefined || sort == null){
+                return layer.msg('资源排序不能为空', function(){
+                    //关闭后的操作
+                });
+            }
+
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url:'/resources/add',
+                data:$('#resourcesForm').serialize(),// 你的formid
+                async: false,
+                success: function(data) {
+                    if(data=="success"){
+                        layer.msg('保存成功');
+                        table.ajax.reload();
+                        $('#resourcesModal').modal('hide');
+                    }else{
+                        layer.msg('保存失败');
+                        $('#resourcesModal').modal('hide');
+                    }
+                }
+            });
+        }
+
+        function delById() {
+            var id = $(".checkchild:checked").val();
+            if ($(".checkchild:checked").length < 1)
+            {
+                layer.msg('请选择一条数据');
+                return;
+            }
+            if ($(".checkchild:checked").length > 1)
+            {
+                layer.msg('一次只能修改一条数据');
+                return;
+            }
+            layer.confirm('您确定要删除该资源吗？', {
+                btn: ['确认','取消'] //按钮
+            }, function(){
+                $.ajax({
+                    cache: true,
+                    type: "POST",
+                    url:'/resources/delete',
+                    data:{id:id},
+                    async: false,
+                    success: function(data) {
+                        if(data=="success"){
+                            layer.msg('删除成功');
+                            table.ajax.reload();
+                        }else{
+                            layer.msg('删除失败');
+                        }
+                    }
+                });
+            });
+
+        }
+    </script>
+</body>
+
+</html>
