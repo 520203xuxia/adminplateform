@@ -3,15 +3,7 @@
 
 <head>
     <title>login</title>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <!-- ZUI 标准版压缩后的 CSS 文件 -->
-    <link rel="stylesheet" href="dists/css/zui.min.css">
-    <link rel="stylesheet" href="dists/css/zui-theme.css">
+    <div th:replace="common/common::head"></div>
 </head>
 
 <body>
@@ -51,10 +43,7 @@
     </div>
 
 
-    <!-- ZUI Javascript 依赖 jQuery -->
-    <script src="dists/lib/jquery/jquery.js"></script>
-    <!-- ZUI 标准版压缩后的 JavaScript 文件 -->
-    <script src="dists/js/zui.min.js"></script>
+    <div th:replace="common/common::script"></div>
 </body>
 
 </html>

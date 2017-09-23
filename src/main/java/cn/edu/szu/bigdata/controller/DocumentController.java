@@ -5,19 +5,21 @@ import cn.edu.szu.bigdata.entity.ReportEntity;
 import cn.edu.szu.bigdata.entity.SegmentEntity;
 import cn.edu.szu.bigdata.model.User;
 import cn.edu.szu.bigdata.service.DocumentService;
+import cn.edu.szu.bigdata.service.ReportService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,23 +39,28 @@ public class DocumentController {
     @Autowired
     DocumentService documentService;
 
+    @Autowired
+    ReportService reportService;
+
     /**
      * 处理post请求，即提交了provicne,city,project_name
      * 通过三个变量获得最接近的5篇文档。
      */
     @PostMapping("/eidtpage")
     public String getEditPage(Model model, HttpServletRequest request){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
         String cmbProvince=request.getParameter("cmbProvince");
         String cmbCity=request.getParameter("cmbCity");
         String domain=request.getParameter("domain");
         String project_name=request.getParameter("project_name");
-        ReportEntity reportEntity=new ReportEntity(project_name,cmbProvince,cmbCity,domain);
-//        HashMap<SegmentEntity,List<SegmentEntity>> segmentEntityListMap=documentService.getAllSegments();
-        HttpSession session=request.getSession();
-        User user=(User)session.getAttribute("userSession");
-        //编写的新文档属性
-        String filenameMd5 = createNewEmptyDocFileToGridFs(project_name, defalutContentType);
-//        model.addAttribute("segmentEntityListMap",segmentEntityListMap);
+        ReportEntity reportEntity=new ReportEntity(project_name,cmbProvince,cmbCity,domain,user.getUsername());
+        String filenameMd5 = createNewEmptyDocFileToGridFs(project_name, defalutContentType,user.getUsername());
+        reportEntity.setId(filenameMd5);
+        if(reportService.selectReportById(filenameMd5)!=null){
+            reportService.deleteReportById(filenameMd5);
+        }
+        reportService.save(reportEntity);
         model.addAttribute("filenameMd5",filenameMd5);
         model.addAttribute("office_online_addr",getOffice_online_addr());
         model.addAttribute("reportEntity",reportEntity);
@@ -61,33 +68,38 @@ public class DocumentController {
         return "edit";
     }
 
+
     /**
      * 上传功能,将本地docx文件上传至服务器，并打开
      */
-    @PostMapping("/upload/{filename}")
-    @ResponseBody
-    public String upload(@PathVariable("filename") String filename,@RequestBody byte[] contents){
-        String[] temp=filename.split(".");
-
+    @PostMapping(value = "/upload",produces = "application/json")
+    public ResponseEntity upload(MultipartFile file,HttpServletRequest request) throws IOException {
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        String filename=file.getOriginalFilename();
+        System.out.println(filename);
         /**
          * 添加文件名格式校验模块
          */
+        String[] temp=filename.split("\\.");
         if(temp.length<2){
             System.out.println("文件名没有可识别的格式");
-            return null;
+            return new ResponseEntity("文件名没有可识别的格式", HttpStatus.OK);
         }
-        else if(temp[1]!="docx"){
+        else if(!temp[1].equals("docx")){
             System.out.println("文件不是docx格式,请转换后上传");
-            return null;
+            return new ResponseEntity("文件不是docx格式,请转换后上传", HttpStatus.OK);
         }
         else{
             DBObject metaData = new BasicDBObject();
-            String sha256=getHash256(contents);
-            String filenameMd5=getMd5(filename)+"."+defalutContentType;
+            String sha256=getHash256(file.getBytes());
+            String filenameMd5=getMd5(filename+user.getUsername())+"."+defalutContentType;
+            reportService.save(new ReportEntity(filenameMd5,filename,user.getUsername()));
             metaData.put("sha256",sha256);
             metaData.put("filename",filename);
-            updateFileToGridFs(filenameMd5,defalutContentType,metaData,contents);
-            return getOffice_online_addr()+"/wopi/files/"+filenameMd5;
+            metaData.put("username",user.getUsername());
+            updateFileToGridFs(filenameMd5,defalutContentType,metaData,file.getBytes());
+            return new ResponseEntity("文件浏览："+getOffice_online_addr()+"/wopi/files/"+filenameMd5,HttpStatus.OK);
         }
     }
 
@@ -105,17 +117,20 @@ public class DocumentController {
     /**
      *
      * @param projectName
+     * @param request  获取请求中的用户名
      * @return
      */
     @GetMapping("/create/{projectName}")
-    public String createEmptyDoc(@PathVariable("projectName") String projectName){
+    public String createEmptyDoc(@PathVariable("projectName") String projectName, HttpServletRequest request){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
         //处理空文件名
         if(projectName==null|| projectName.length()==0){
             return "文件名为空";
         }
         String message;
         try {//正常则返回创建的文件名
-            message=createNewEmptyDocFileToGridFs(projectName, defalutContentType);
+            message=createNewEmptyDocFileToGridFs(projectName, defalutContentType,user.getUsername());
         }catch(Exception e){//处理文件名重复
             message=e.getMessage();
         }
@@ -151,7 +166,10 @@ public class DocumentController {
      * 显示文档内容页面
      */
     @GetMapping("show/{docname}/{name}")
-    public String showPdf(Model model,@PathVariable("docname") String docname,@PathVariable("name") String name){
+    public String showPdf(Model model,@PathVariable("docname") String docname,@PathVariable("name") String name,HttpServletRequest request){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        model.addAttribute("user",user);
         model.addAttribute("name",name);
         System.out.println(getOffice_online_addr()+docname);
         model.addAttribute("docurl",getOffice_online_addr()+docname);
@@ -161,39 +179,23 @@ public class DocumentController {
     /**
      * 获取pdf文档内容
      * @param name
-     * @param response
      */
-    @GetMapping("/pdf/{name}")
-    public void getPdf(@PathVariable("name") String name, HttpServletResponse response){
+    @RequestMapping(value="/loadTechFile/{name}", produces="application/pdf")
+    @ResponseBody
+    public Object getPdf(@PathVariable("name") String name){
         String filenameMd5=getMd5(name)+".pdf";
         System.out.println(filenameMd5);
         if(!checkFileisExistInPdf(filenameMd5)){
             System.out.println("文件不存在");
-            return;
+            return null;
         }
-        OutputStream toClient=null;
         try{
-            //清空response
-            response.reset();
             byte[] buffer=getPdfContent(filenameMd5);
-
-            //设置response的Header
-            response.addHeader("Content-Disposition","attachment;filename=" + new String(name.getBytes("utf-8"), "ISO-8859-1"));
-            response.addHeader("Content-Length", "" + buffer.length);
-            toClient = new BufferedOutputStream(response.getOutputStream());
-            toClient.write(buffer);
-            toClient.flush();
             System.out.println("获取pdf文件内容成功");
+            return ArrayUtils.toPrimitive(buffer);
         }catch(IOException e){
             e.printStackTrace();
-        }finally {
-            try {
-                if(toClient!=null){
-                    toClient.close();
-                }
-            }catch (IOException e){
-                e.printStackTrace();
-            }
+            return null;
         }
     }
 

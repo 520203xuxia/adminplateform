@@ -2,6 +2,7 @@ package cn.edu.szu.bigdata.service;
 
 import cn.edu.szu.bigdata.config.MongoConfig;
 import cn.edu.szu.bigdata.entity.DocEntity;
+import cn.edu.szu.bigdata.entity.ReportEntity;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
@@ -64,6 +65,7 @@ public class GridFsService {
             return true;
         }
     }
+
 
     /**
      * 获取文档内容
@@ -184,10 +186,10 @@ public class GridFsService {
      * @param Project_Name  项目的名称 不包含 ".doc"
      * @param contentType
      */
-    public static String createNewEmptyDocFileToGridFs(String Project_Name,String contentType){
+    public static String createNewEmptyDocFileToGridFs(String Project_Name,String contentType,String username){
 
         String templateFile=templateFilePath;
-        String filenameMd5=getMd5(Project_Name)+"."+contentType;
+        String filenameMd5=getMd5(Project_Name+username)+"."+contentType;
         if(checkFileisExist(filenameMd5)){
             System.out.println("系统存在同名文件");
         }

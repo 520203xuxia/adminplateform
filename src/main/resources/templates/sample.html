@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>sample</title>
+    <div th:replace="common/common::head"></div>
+</head>
+<body>
+    <nav th:replace="common/common::topbar"></nav>
+
+    <div class="container-fluid">
+        <nav th:replace="common/common::sidebar"></nav>
+        <div class="col-lg-9 col-md-12 col-sm-12" style="height:100%" id="content">
+            样例内容部分
+        </div>
+    </div>
+    <div th:replace="common/common::footer"></div>
+    <div th:replace="common/common::script"></div>
+</body>
+</html>

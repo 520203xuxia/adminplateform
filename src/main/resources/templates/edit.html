@@ -3,104 +3,42 @@
 
 <head>
     <title>edit</title>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <!-- ZUI 标准版压缩后的 CSS 文件 -->
-    <link rel="stylesheet" href="dists/css/zui.min.css">
-    <link rel="stylesheet" href="dists/css/zui.lite.css"/>
-
-    <link rel="stylesheet" href="dists/css/zui-theme.css">
-    <link href="dists/lib/dashboard/zui.dashboard.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="dists/lib/uploader/zui.uploader.css"/>
+    <div th:replace="common/common::head"></div>
 </head>
 
 <body>
-<nav class="navbar navbar-default" role="navigation" id="header">
-    <div class="container-fluid" style="margin-top:1%">
-        <!-- 导航头部 -->
-        <div class="navbar-header">
-            <!-- 移动设备上的导航切换按钮 -->
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-example">
-                <span class="sr-only">切换导航</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <!-- 品牌名称或logo -->
-            <a class="navbar-brand" href="index">BDI 管理系统</a>
-        </div>
-        <!-- 导航项目 -->
-        <div class="collapse navbar-collapse navbar-collapse-example">
-            <!-- 一般导航项目 -->
-            <ul class="nav navbar-nav">
-                <li><a href="http://172.31.238.102:7180">平台监控</a></li>
-                <li><a href="http://172.31.238.138:8989">可视化</a></li>
-                <li><a href="http://172.31.238.138:8000">spark</a></li>
-                <li><a href="http://172.31.238.103:8787">R studio</a></li>
-                <!-- 导航中的下拉菜单 -->
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">存储系统 <b class="caret"></b></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="http://172.31.238.142">owncloud</a></li>
-                        <li><a href="#">mysql</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <!-- 导航中的表单 -->
-            <form class="navbar-form navbar-left" role="search">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="搜索">
-                </div>
-                <button type="submit" class="btn btn-default">搜索</button>
-            </form>
-            <!-- 右侧的导航项目 -->
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="/admin">管理</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><span th:text="${user.username}"></span> <b class="caret"></b></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">个人资料</a></li>
-                        <li><a href="#">帮助</a></li>
-                        <li class="divider"></li>
-                        <li><a href="/logout">退出</a></li>
-                    </ul>
-                </li>
-            </ul>
-            </ul>
-        </div>
-        <!-- END .navbar-collapse -->
-    </div>
-</nav>
+<nav th:replace="common/common::topbar"></nav>
 <!--左侧导航栏-->
-<div class="container-fluid" id="sidebar">
-    <nav class="menu col-lg-2" data-ride="menu">
+<div class="container-fluid">
+    <div class="col-lg-2" id="sidebar">
         <!--这是修改的左边栏的内容-->
-        <div style="height:550px;overflow:scroll ">
+        <div style="height:550px;overflow:scroll">
             <ul class="tree tree-menu" data-ride="tree" id="sidebar-content">
             </ul>
         </div>
         <div style="height: 100px">
-            <div id="uploaderExample" class="uploader">
-                <div class="file-list" data-drag-placeholder="请拖拽文件到此处"></div>
-                <button type="button" class="btn btn-primary uploader-btn-browse"><i class="icon icon-cloud-upload"></i> 选择文件</button>
-            </div>
-            <div id="file-list"></div>
-            <button class="btn btn-lg" ><a th:href="@{'/wopi/files/'+${filenameMd5}+'/contents'}">下载文档</a></button>
+            <form method="POST" enctype="multipart/form-data" id="fileUploadForm">
+                <input type="file" name="file" class="form-control"/>
+                <button class="btn btn-link uploader-btn-start" value="Submit" id="btnSubmit"><i class="icon icon-cloud-upload"></i>开始上传</button>
+            </form>
+            <button class="btn btn-link uploader-btn-start" ><a th:href="@{'/wopi/files/'+${filenameMd5}+'/contents'}">下载文档</a></button>
+            <pre>
+                <span id="result"></span>
+            </pre>
         </div>
-    </nav>
+    </div>
+
     <div class="col-lg-7 col-md-12 col-sm-12" style="height:100%" id="content">
-        <iframe th:src="@{${office_online_addr}+${filenameMd5}}" src="http://172.31.238.77/we/wordeditorframe.aspx?WOPISrc=http%3a%2f%2f172.31.238.70%3a8080%2fwopi%2ffiles%2f111111.docx" width="100%" height="850px;" frameborder="2" style="float: right;">
+        <iframe th:src="@{${office_online_addr}+${filenameMd5}}" width="100%" height="850px;" frameborder="2" style="float: right;">
 
         </iframe>
     </div>
-    <div class="col-lg-3">
+
+    <div class="col-lg-3" id="sidebar-right">
         <ul class="nav nav-tabs" id="myTabs">
-            <li class="active" style="width:50%;"><a data-tab href="#home">相似文档</a></li>
-            <li class="" style="width:50%;"><a data-tab href="#profile">相关段落</a></li>
+            <li class="active" style="width:40%;"><a data-tab href="#home">相似文档</a></li>
+            <li class="" style="width:30%;"><a data-tab href="#profile">相关段落</a></li>
+            <li class="" style="width:30%;"><a data-tab href="#profile">我的文档</a></li>
         </ul>
         <div class="tab-content" style="margin-top:10px;">
             <div class="tab-pane active" id="home">
@@ -109,25 +47,21 @@
             <div class="tab-pane" id="profile">
                 相似段落测试
             </div>
+            <div class="tab-pane" id="mydoc">
+                我的文档
+            </div>
         </div>
     </div>
+
 </div>
 
-<!-- ZUI Javascript 依赖 jQuery -->
-<script src="dists/lib/jquery/jquery.js"></script>
-<!-- ZUI 标准版压缩后的 JavaScript 文件 -->
-<script src="dists/js/zui.min.js"></script>
-<script src="dists/js/zui.lite.js"></script>
-<script src="dists/lib/uploader/zui.uploader.js"></script>
-<script src="dists/lib/dashboard/zui.dashboard.min.js"></script>
-<script src="dists/lib/dashboard/zui.dashboard.min.js"></script>
-<script>
-    $('#dashboard').dashboard({ draggable: true });
-</script>
+<div th:replace="common/common::footer"></div>
+<div th:replace="common/common::script"></div>
 
+<!--自定义脚本-->
 <script th:inline="javascript">
     $(function(){
-        var name = /*[[${reportEntity.ProjectName}]]*/ "Gertrud Kiwifruit";
+        var name = /*[[${reportEntity.project_name}]]*/ "Gertrud Kiwifruit";
         var docname=/*[[${filenameMd5}]]*/ "111111.docx"
         //创建request对象
         var request = new XMLHttpRequest();
@@ -157,20 +91,20 @@
             element.innerHTML=null;
             for(var i=0;i<jsonData.length;i++){
                 var json=jsonData[i];
-                var projectName=json.projectName;
-                var projectCity=json.projectCity;
-                var projectProvince=json.projectProvince;
+                var project_name=json.project_name;
+                var project_city=json.project_city;
+                var project_province=json.project_province;
                 var ul=document.createElement("ul");
                 ul.setAttribute("class","list-group");
                 var li=document.createElement("li");
                 li.setAttribute("class","list-group-item");
                 var a=document.createElement("a");
                 a.setAttribute("class","list-group-item-heading");
-                a.setAttribute("href","/show/"+docname+"/"+projectName);
-                a.innerHTML=projectName;
+                a.setAttribute("href","/show/"+docname+"/"+project_name);
+                a.innerHTML=project_name;
                 var p=document.createElement("p");
                 p.setAttribute("class","list-group-item-text text-muted");
-                p.innerHTML=projectCity+"-"+projectProvince;
+                p.innerHTML=project_city+"-"+project_province;
 
 
                 li.appendChild(a);
@@ -188,7 +122,6 @@
         }
     });
 </script>
-
 <script>
 
     var myTreeData = [{
@@ -298,7 +231,7 @@
             element.innerHTML=null;
             for(var i=0;i<jsonData.length;i++){
                 var json=jsonData[i];
-                var projectName=json.projectName;
+                var project_name=json.project_name;
                 var segmentContent=json.segmentContent;
                 var div1=document.createElement("div");
                 div1.setAttribute("class","panel");
@@ -309,7 +242,7 @@
                 div3.innerHTML=segmentContent;
                 var a1=document.createElement("a");
                 //  a1.setAttribute("class","am-text-truncate");
-                a1.innerHTML=projectName;
+                a1.innerHTML=project_name;
                 div2.appendChild(a1);
                 div1.appendChild(div2);
                 div1.appendChild(div3);
@@ -322,11 +255,45 @@
         }
     };
 
-    $('#uploaderExample').uploader({
-        autoUpload: true,            // 当选择文件后立即自动进行上传操作
-        url: 'your/file/upload/url'  // 文件上传提交地址
-    });
 </script>
+<script>
+    $(document).ready(function () {
+
+        $("#btnSubmit").click(function (event) {
+            event.preventDefault();
+
+            fire_ajax_submit();
+
+        });
+
+    });
+
+    function fire_ajax_submit() {
+
+        // Get form
+        var form = $('#fileUploadForm')[0];
+
+        var data = new FormData(form);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: "/upload",
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                $("#result").text(data);
+            },
+            error: function (e) {
+                $("#result").text(e.responseText);
+            }
+        });
+
+    }
+</script>
+
 </body>
 
 </html>

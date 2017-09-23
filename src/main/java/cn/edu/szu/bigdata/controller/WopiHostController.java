@@ -2,13 +2,16 @@ package cn.edu.szu.bigdata.controller;
 
 import cn.edu.szu.bigdata.entity.DocEntity;
 import cn.edu.szu.bigdata.entity.FileInfoEntity;
+import cn.edu.szu.bigdata.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,7 +34,16 @@ public class WopiHostController {
 
 
     @RequestMapping("/files/{name}")//这里的name是md5值
-    public void getFileInfo(@PathVariable(name = "name" ) String name, HttpServletResponse response){
+    public void getFileInfo(@PathVariable(name = "name" ) String name, HttpServletResponse response, HttpServletRequest request){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        String ownId=null;
+        if(user != null){
+            ownId=user.getUsername();
+        }
+        else{
+            ownId="admin";
+        }
         FileInfoEntity fileInfoEntity=new FileInfoEntity();
         try{
             //获取文件名
@@ -40,7 +52,7 @@ public class WopiHostController {
             if(fileName!=null && fileName.length()>0 && checkFileisExist(fileName)){
                 DocEntity docEntity = getDocEntityFromGridFs(fileName);
                 fileInfoEntity.setBaseFileName(docEntity.getFileName());
-                fileInfoEntity.setOwnerId(currentUser);
+                fileInfoEntity.setOwnerId(ownId);
                 fileInfoEntity.setSize(docEntity.getLength());
                 fileInfoEntity.setVersion(docEntity.getUploadDate().getTime());
                 fileInfoEntity.setSha256((String) docEntity.getMetadata().get("sha256"));
@@ -70,7 +82,7 @@ public class WopiHostController {
         String sha256=getHash256(content);
         DocEntity docEntity=getDocEntityFromGridFs(name);
         String contentType=docEntity.getContentType();
-        DBObject metaData = new BasicDBObject();
+        DBObject metaData = docEntity.getMetadata();
         metaData.put("sha256",sha256);
         updateFileToGridFs(name,contentType,metaData,content);
     }

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>sample</title>
+    <div th:replace="common/common::head"></div>
+</head>
+<body>
+    <nav th:replace="common/common::topbar"></nav>
+
+    <div class="container-fluid">
+
+        <div class="col-lg-6">
+            <iframe class="pull-left" th:src="${docurl}" width="100%" height="1000" frameborder="2"></iframe>
+        </div>
+
+        <div class="col-lg-6 col-md-12 col-sm-12">
+            <embed class="pull-right" width="100%" height="1000" th:src="'/loadTechFile/'+${name}"></embed>
+        </div>
+    </div>
+
+
+    <div th:replace="common/common::footer"></div>
+    <div th:replace="common/common::script"></div>
+</body>
+</html>

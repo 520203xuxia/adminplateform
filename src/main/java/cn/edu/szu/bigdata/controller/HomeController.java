@@ -1,8 +1,6 @@
 package cn.edu.szu.bigdata.controller;
 
 import cn.edu.szu.bigdata.model.User;
-import org.apache.catalina.Session;
-import org.apache.ibatis.jdbc.Null;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.LockedAccountException;
@@ -70,6 +68,7 @@ public class HomeController {
 
     @RequestMapping(value = {"/index",""})
     public String index(HttpServletRequest request,Model model){
+        System.out.println("测试");
         HttpSession session=request.getSession();
         User user=(User)session.getAttribute("userSession");
         model.addAttribute("user",user);
@@ -106,5 +105,13 @@ public class HomeController {
         User user=(User)session.getAttribute("userSession");
         model.addAttribute("user",user);
         return "admin/resource";
+    }
+
+    @RequestMapping("/forbiden")
+    public String sample(HttpServletRequest request,Model model){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        model.addAttribute("user",user);
+        return "403";
     }
 }

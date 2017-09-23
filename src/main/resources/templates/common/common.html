@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>common</title>
+</head>
+<body>
+    <div th:fragment="head">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="Cache-Control" content="no-siteapp" />
+        <!-- ZUI 标准版压缩后的 CSS 文件 -->
+        <link rel="stylesheet" th:href="@{/dists/css/zui.min.css}">
+        <link rel="stylesheet" th:href="@{/dists/css/zui-theme.css}">
+        <link rel="stylesheet" th:href="@{/dists/lib/bootbox/bootbox.css}">
+        <link rel="stylesheet" th:href="@{/dists/css/jquery.dataTables.min.css}" />
+        <link rel="stylesheet" th:href="@{/dists/lib/dashboard/zui.dashboard.min.css}" >
+    </div>
+
+    <nav th:fragment="topbar" class="navbar" role="navigation" id="header">
+        <div class="container-fluid" style="margin-top:1%">
+            <!-- 导航头部 -->
+            <div class="navbar-header">
+                <!-- 移动设备上的导航切换按钮 -->
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-example">
+                    <span class="sr-only">切换导航</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- 品牌名称或logo -->
+                <a class="navbar-brand" href="/index">BDI 管理系统</a>
+            </div>
+            <!-- 导航项目 -->
+            <div class="collapse navbar-collapse navbar-collapse-example">
+                <!-- 一般导航项目 -->
+                <ul class="nav navbar-nav">
+                    <li><a href="http://172.31.238.102:7180">平台监控</a></li>
+                    <li><a href="http://172.31.238.138:8989">可视化</a></li>
+                    <li><a href="http://172.31.238.138:8000">spark</a></li>
+                    <li><a href="http://172.31.238.103:8787">R studio</a></li>
+                    <!-- 导航中的下拉菜单 -->
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">存储系统 <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="http://172.31.238.142">owncloud</a></li>
+                            <li><a href="http://172.31.238.142:8983">solr</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- 导航中的表单 -->
+                <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="搜索">
+                    </div>
+                    <button type="submit" class="btn btn-default">搜索</button>
+                </form>
+                <!-- 右侧的导航项目 -->
+                <ul class="nav navbar-nav navbar-right">
+                    <!--<li><a href="/admin">管理</a></li>-->
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><span th:text="${user.username}"></span> <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">个人资料</a></li>
+                            <li><a href="#">帮助</a></li>
+                            <li class="divider"></li>
+                            <li><a href="/logout">退出</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- END .navbar-collapse -->
+        </div>
+    </nav>
+
+    <nav th:fragment="sidebar" class="menu col-lg-3"  data-ride="menu" id="sidebar" style="height:750px;overflow:scroll">
+        <ul id="treeMenu" class="tree tree-menu" data-ride="tree">
+            <li id="home"><a th:href="@{/}"><i class="icon icon-th"></i>首页</a></li>
+            <li id="forbiden"><a th:href="@{/forbiden}"><i class="icon icon-info-sign"></i>403</a></li>
+            <li id="password"><a th:href="@{/passwordHouse}"><i class="icon icon-info"></i>密码库</a></li>
+            <li id="huanping_input"><a th:href="@{/huanping_input}"><i class="icon icon-edit"></i>环评报告</a></li>
+            <li>
+                <a href="javascript:;"><i class="icon icon-tasks"></i>用户角色权限管理</a>
+                <ul>
+                    <li><a th:href="@{/admin/myuser}"><i class="icon icon-circle-blank"></i> 用户管理</a></li>
+                    <li><a th:href="@{/admin/myrole}"><i class="icon icon-circle-blank"></i> 角色管理</a></li>
+                    <li><a th:href="@{/admin/myresource}"><i class="icon icon-circle-blank"></i> 权限管理</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <div th:fragment="footer">
+        <div class="container-fluid">
+            <hr>
+            <p class="text-muted small">版权所有 2017-</p>
+        </div>
+    </div>
+
+    <div th:fragment="script">
+        <!-- ZUI Javascript 依赖 jQuery -->
+        <script th:src="@{/dists/lib/jquery/jquery.js}"></script>
+        <!-- ZUI 标准版压缩后的 JavaScript 文件 -->
+        <script th:src="@{/dists/js/zui.min.js}"></script>
+        <script th:src="@{/dists/lib/bootbox/bootbox.js}"></script>
+        <script th:src="@{/dists/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/dists/lib/dashboard/zui.dashboard.min.js}"></script>
+        <script th:src="@{/dists/js/layer.js}"></script>
+        <script>
+            $('#dashboard').dashboard({ draggable: true });
+        </script>
+    </div>
+</body>
+</html>
