@@ -3,6 +3,7 @@ package cn.edu.szu.bigdata.service.impl;
 import cn.edu.szu.bigdata.entity.ReportEntity;
 import cn.edu.szu.bigdata.mapper.ReportMapper;
 import cn.edu.szu.bigdata.service.ReportService;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ public class ReportServiceImpl extends BaseService<ReportEntity> implements Repo
     @Override
     @Transactional(propagation= Propagation.REQUIRED,readOnly=false,rollbackFor={Exception.class})
     public void deleteReportById(String id) {
+        Logger.getLogger(getClass()).info("delete:"+id);
         reportMapper.deleteById(id);
     }
 

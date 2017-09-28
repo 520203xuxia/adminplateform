@@ -29,6 +29,7 @@ import java.util.Map;
  */
 @Configuration
 public class ShiroConfig {
+
     @Autowired(required = false)
     private ResourcesService resourcesService;
 

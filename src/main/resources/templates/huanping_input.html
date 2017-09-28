@@ -20,7 +20,7 @@
                 <li class="active">环评报告</li>
             </ol>
             <div>
-                <form action="eidtpage" method="post" onsubmit="check()">
+                <form action="eidtpage" method="post" onsubmit="return check()">
                     <fieldset>
                         <legend>环评报告基本信息</legend>
                         <div class="form-group">
@@ -28,19 +28,31 @@
                             <input type="text" class="form-control" id="project_name" name="project_name" placeholder="XX项目环境影响评价表">
                         </div>
                         <div class="form-group">
-                            <label for="domain">项目所属领域</label>
-                            <input type="text" class="form-control" id="domain" name="domain" placeholder="社会区域等等">
+                            <label for="type_name">项目所属领域</label>
+                            <select class="form-control" id="type_name" name="type_name">
+                                <option>轻工纺织化纤</option>
+                                <option>化工石化医药</option>
+                                <option>冶金机电</option>
+                                <option>建材火电</option>
+                                <option>农林水利</option>
+                                <option>采掘</option>
+                                <option>交通运输</option>
+                                <option>社会区域</option>
+                                <option>海洋工程</option>
+                                <option>输变电及广电通讯</option>
+                                <option>核工业</option>
+                            </select>
                         </div>
                         <div class="input-group">
                             <div class="input-group">
                                 <span class="input-group-btn">
                                     <button class="btn btn-default" type="button" >所属省份</button>
                                 </span>
-                                <select class="form-control" id="cmbProvince" name="cmbProvince"></select>
+                                <select class="form-control" id="project_province" name="project_province"></select>
                                 <span class="input-group-btn">
                                     <button class="btn btn-default" type="button">所属城市</button>
                                 </span>
-                                <select class="form-control" id="cmbCity" name="cmbCity"></select>
+                                <select class="form-control" id="project_city" name="project_city"></select>
                                 <span class="input-group-btn">
                                         <button class="btn btn-default" type="button">所属县区</button>
                                     </span>
@@ -64,15 +76,22 @@
     <!--表单验证-->
     <script type="text/javascript">
         function check() {
-            var  pname=document.getElementById("project_name");
-            var  pdomain=document.getElementById("domain");
-            var  province=document.getElementById("cmbProvince");
-
+            var  pname = document.getElementById("project_name");
+            var  pdomain = document.getElementById("type_name");
+            var  province = document.getElementById("project_province");
+            var country = document.getElementById('cmbArea');
+            var city = document.getElementById('project_city');
+            var a=country.options[country.selectedIndex].text.lastIndexOf('县');
+            if (a != -1){
+                // city.value=country.value;
+                city.options[city.selectedIndex].text=country.options[country.selectedIndex].text;
+            }
 
             if(pname.value.length==0||pdomain.value==""||province.value.length>4){
                 alert("请完善信息");
                 return false;
             }
+            alert(city.options[city.selectedIndex].text);
             return true;
         }
     </script>
@@ -561,7 +580,7 @@
         ];
     </script>
     <script type="text/javascript">
-        addressInit('cmbProvince', 'cmbCity', 'cmbArea');
+        addressInit('project_province', 'project_city', 'cmbArea');
     </script>
 
 </body>

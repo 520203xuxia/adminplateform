@@ -12,12 +12,17 @@ public class constant {
     public static String defalutContentType="docx";
 
     public static String getOffice_online_addr(){
+//        String ip="longhaofeixia.6655.la";
+//        String port="15341";
+//        String office_online_server_ip="longbigdata.wicp.net";
+        String office_online_server_ip="172.31.238.77";
         String ip=null;
+        String port="8080";
         try{
             ip = InetAddress.getLocalHost().getHostAddress();
         }catch(UnknownHostException e){
             e.printStackTrace();
         }
-        return "http://172.31.238.77/we/wordeditorframe.aspx?WOPISrc=http://"+ip+":8080/wopi/files/";
+        return "http://"+office_online_server_ip+"//we/wordeditorframe.aspx?WOPISrc=http://"+ip+":"+port+"/wopi/files/";
     }
 }

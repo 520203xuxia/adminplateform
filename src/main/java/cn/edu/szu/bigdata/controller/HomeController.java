@@ -78,6 +78,7 @@ public class HomeController {
     @RequestMapping("/huanping_input")
     public String huanping_input(HttpServletRequest request,Model model){
         HttpSession session=request.getSession();
+
         User user=(User)session.getAttribute("userSession");
         model.addAttribute("user",user);
         return "huanping_input";
@@ -97,6 +98,14 @@ public class HomeController {
         User user=(User)session.getAttribute("userSession");
         model.addAttribute("user",user);
         return "admin/role";
+    }
+
+    @RequestMapping("/admin/segmentInfo")
+    public String segmentInfoAdmin(HttpServletRequest request,Model model){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        model.addAttribute("user",user);
+        return "admin/segmentInfo";
     }
 
     @RequestMapping("/admin/myresource")

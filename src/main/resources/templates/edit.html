@@ -12,7 +12,7 @@
 <div class="container-fluid">
     <div class="col-lg-2" id="sidebar">
         <!--这是修改的左边栏的内容-->
-        <div style="height:550px;overflow:scroll">
+        <div style="height:750px;overflow:scroll">
             <ul class="tree tree-menu" data-ride="tree" id="sidebar-content">
             </ul>
         </div>
@@ -28,41 +28,371 @@
         </div>
     </div>
 
-    <div class="col-lg-7 col-md-12 col-sm-12" style="height:100%" id="content">
-        <iframe th:src="@{${office_online_addr}+${filenameMd5}}" width="100%" height="850px;" frameborder="2" style="float: right;">
+    <div class="col-lg-7 col-md-12 col-sm-12" id="content">
+        <iframe th:src="@{${office_online_addr}+${filenameMd5}}" width="100%" height="900px;" frameborder="2" style="float: right;">
 
         </iframe>
     </div>
 
-    <div class="col-lg-3" id="sidebar-right">
-        <ul class="nav nav-tabs" id="myTabs">
-            <li class="active" style="width:40%;"><a data-tab href="#home">相似文档</a></li>
-            <li class="" style="width:30%;"><a data-tab href="#profile">相关段落</a></li>
-            <li class="" style="width:30%;"><a data-tab href="#profile">我的文档</a></li>
+    <div class="col-lg-3" id="sidebar-right" style="height: 850px">
+        <ul class="nav nav-tabs">
+            <li id="showDocument" class="active" style="width:40%;"><a data-tab href="#home">相似文档</a></li>
+            <li id="showSegment" class="" style="width:30%;"><a data-tab href="#profile">相关段落</a></li>
+            <li id="showMyDoc" class="" style="width:30%;"><a data-tab href="#myDoc">我的文档</a></li>
         </ul>
         <div class="tab-content" style="margin-top:10px;">
             <div class="tab-pane active" id="home">
-                相似文档测试
             </div>
             <div class="tab-pane" id="profile">
                 相似段落测试
             </div>
-            <div class="tab-pane" id="mydoc">
+            <div class="tab-pane" id="myDoc">
                 我的文档
             </div>
         </div>
     </div>
 
+
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+                    <h4 class="modal-title">编辑文档信息</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="project_name">项目名称</label>
+                            <input type="text" class="form-control" id="project_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="project_province">项目所在省份</label>
+                            <input type="text" class="form-control" id="project_province">
+                        </div>
+                        <div class="form-group">
+                            <label for="project_city">项目所在城市</label>
+                            <input type="text" class="form-control" id="project_city">
+                        </div>
+                        <div class="form-group">
+                            <label for="type_name">项目所属领域</label>
+                            <input type="text" class="form-control" id="type_name">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="editReport()" data-dismiss="modal">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div th:replace="common/common::footer"></div>
 <div th:replace="common/common::script"></div>
 
-<!--自定义脚本-->
+
+<!--侧边栏初始化-->
+<script>
+    $('#showMyDoc').click(showMyDocInfo);
+    function showMyDocInfo() {
+
+        var showDocument = document.getElementById('showDocument');
+        var showSegment = document.getElementById('showSegment');
+        var showMyDoc = document.getElementById('showMyDoc');
+        showDocument.setAttribute("class", "");
+        showSegment.setAttribute("class", "");
+        showMyDoc.setAttribute("class", "active");
+
+        var home = document.getElementById('home');
+        var profile = document.getElementById('profile');
+        var myDoc = document.getElementById('myDoc');
+        home.className = "tab-pane";
+        profile.className = "tab-pane";
+        myDoc.className = "tab-pane active";
+
+
+        var request = new XMLHttpRequest();
+        request.open('GET', "/reports", true);
+        request.onreadystatechange = function () {
+            if (request.readyState === 4) { // 成功完成
+                // 判断响应结果:
+                if (request.status === 200) {
+                    // 成功，通过responseText拿到响应的文本:
+                    return success(request.responseText);
+                } else {
+                    // 失败，根据响应码判断失败原因:
+                    return fail(request.status);
+                }
+            } else {
+                // HTTP请求还在继续...
+            }
+        }
+        request.send();
+
+
+        function success(text) {
+            var jsonData = JSON.parse(text);
+            var element = document.getElementById('myDoc');
+            element.innerHTML = null;
+            var id;
+            var project_name;
+            var project_city;
+            var project_province;
+            var type_name;
+            for (var i = 0; i < jsonData.length; i++) {
+                var json = jsonData[i];
+                id = json.id;
+                project_name = json.project_name;
+                project_city = json.project_city;
+                project_province = json.project_province;
+                type_name = json.type_name;
+                var ul = document.createElement("ul");
+                ul.setAttribute("class", "list-group");
+                var li = document.createElement("li");
+                li.setAttribute("class", "list-group-item");
+                var a = document.createElement("a");
+                a.setAttribute("class", "list-group-item-heading");
+                a.setAttribute("href", "/page/" + id);
+                a.innerHTML = project_name;
+                var p = document.createElement("p");
+                var span1=document.createElement("span");
+                span1.innerText = project_city + "-" + project_province + '-' + type_name;
+                span1.setAttribute("class","list-group-item-text text-muted");
+
+                p.appendChild(span1);
+                var a1=document.createElement("a");
+                a1.setAttribute("class","list-group-item-text text-muted pull-right");
+                a1.setAttribute("data-toggle","modal");
+                a1.setAttribute("data-target","#myModal");
+                a1.setAttribute("href","");
+                a1.innerHTML="编辑";
+                p.appendChild(a1);
+
+                var a2=document.createElement("a");
+                a2.setAttribute("class","list-group-item-text text-muted pull-right");
+                a2.setAttribute("href","javascript:deleteReport('"+id+"')");
+                a2.innerHTML="删除";
+                p.appendChild(a2);
+
+                li.appendChild(a);
+                li.appendChild(p);
+                ul.appendChild(li);
+                element.appendChild(ul);
+            }
+
+        }
+
+
+        function fail(code) {
+            var textarea = document.getElementById('myDoc');
+            textarea.innerText = 'Error code: ' + code;
+        }
+    }
+
+    function editReport(){
+        alert("edit:");
+    }
+
+    function deleteReport(id) {
+        $(function () {
+            alert("delete:"+id);
+            var request=new XMLHttpRequest();
+            request.open('GET','/reports/'+id+'/delete',true);
+            request.onreadystatechange=function () {
+                if (request.readyState === 4 && request.status === 200) {
+                    var dom1=document.getElementById("showMyDoc");
+                    dom1.click();
+                }
+            }
+            request.send();
+        });
+    }
+
+
+
+</script>
 <script th:inline="javascript">
-    $(function(){
-        var name = /*[[${reportEntity.project_name}]]*/ "Gertrud Kiwifruit";
-        var docname=/*[[${filenameMd5}]]*/ "111111.docx"
+
+    var name = /*[[${reportEntity.project_name}]]*/ "Gertrud Kiwifruit";
+    var docname=/*[[${filenameMd5}]]*/ "111111.docx"
+
+
+    $('#showSegment').click(showSeg('环境影响评价项目的由来'));
+    function showSeg(segment_name){
+        var showDocument = document.getElementById('showDocument');
+        var showSegment = document.getElementById('showSegment');
+        var showMyDoc = document.getElementById('showMyDoc');
+        showDocument.setAttribute("class", "");
+        showSegment.setAttribute("class", "active");
+        showMyDoc.setAttribute("class", "");
+
+        var home = document.getElementById('home');
+        var profile = document.getElementById('profile');
+        var myDoc = document.getElementById('myDoc');
+        home.className = "tab-pane";
+        profile.className = "tab-pane active";
+        myDoc.className = "tab-pane";
+
+        //创建request对象
+        var request = new XMLHttpRequest();
+        //
+        // 发送请求:
+        request.open('GET', '/segments/'+segment_name,true);
+        //注册相关事件回调处理函数
+        request.onreadystatechange=function () {
+            if (request.readyState === 4) { // 成功完成
+                // 判断响应结果:
+                if (request.status === 200) {
+                    // 成功，通过responseText拿到响应的文本:
+                    return success(request.responseText);
+                } else {
+                    // 失败，根据响应码判断失败原因:
+                    return fail(request.status);
+                }
+            } else {
+                // HTTP请求还在继续...
+            }
+        }
+        request.send();
+
+        function success(text) {
+            var jsonData=JSON.parse(text);
+            var element = document.getElementById('profile');
+            element.innerHTML=null;
+            for(var i=0;i<jsonData.length;i++){
+                var json=jsonData[i];
+                var project_name=json.project_name;
+                var segmentContent=json.segment_content;
+
+                var ul=document.createElement("ul");
+                ul.setAttribute("class","list-group");
+                var li=document.createElement("li");
+                li.setAttribute("class","list-group-item");
+                var a=document.createElement("a");
+                a.setAttribute("class","list-group-item-heading");
+                a.setAttribute("href","/show/"+docname+"/"+project_name);
+                a.innerHTML=project_name;
+                var contentDiv=document.createElement("div");
+                contentDiv.setAttribute("class","list-group-item-text text-muted");
+                contentDiv.innerHTML=segmentContent;
+                li.appendChild(a);
+                li.appendChild(contentDiv);
+                ul.appendChild(li);
+                element.appendChild(ul);
+
+            }
+        }
+        function fail(code) {
+            var textarea = document.getElementById('profile');
+            textarea.innerText = 'Error code: ' + code;
+        }
+    }
+
+    var myTreeData = [{
+        title: '水果',
+        url: 'http://zui.sexy',
+        open: true,
+        children: [
+            {title: '橘子'},
+            {
+                title: '瓜',
+                children: [
+                    {title: '西瓜'},
+                    {title: '黄瓜'}
+                ]
+            }
+        ]
+    }];
+
+    $('#sidebar-content').tree({
+        data:myTreeData,
+        itemCreator: function ($li, item) {
+            $li.append($('<a/>', { href: '#'}).text(item.title).prepend($('<i/>',{class:"icon icon-file"})));
+            // return false; // 如果要忽略当前节点，可以通过返回 false 来实现
+        }
+    });
+
+
+    $(function getdata() {
+        //创建request对象
+        var request = new XMLHttpRequest();
+        //
+        // 发送请求:
+        request.open('GET', "/segmentInfo",true);
+        //注册相关事件回调处理函数
+        request.onreadystatechange=function () {
+            if (request.readyState === 4) { // 成功完成
+                // 判断响应结果:
+                if (request.status === 200) {
+                    // 成功，通过responseText拿到响应的文本:
+                    var testdata=success(request.responseText);
+
+                    var mytree=$('#sidebar-content').data('zui.tree');
+
+                    mytree.reload(testdata);
+
+                    var list=document.getElementById('sidebar-content');
+                    var li=list.getElementsByTagName('a');
+                    for(var i=0;i<li.length;i++)
+                    {
+                        li[i].onclick=function(){
+                            showSeg(this.innerText);
+                        }
+                    }
+
+                }
+            }
+        }
+        request.send();
+
+        function success(text) {
+            var jsonData = JSON.parse(text);
+            var mydata=[];
+            for(var i=0;i<jsonData.length;i++){
+                var obj={};
+                obj['title']=jsonData[i].segment_name;
+                mydata[i]=obj;
+            }
+            for(var i=0;i<jsonData.length;i++) {
+                if (jsonData[i].parentid !== 0) {
+                    var parent = mydata[jsonData[i].parentid-1];
+                    if (!('children' in parent)) {
+                        var obj = [];
+                        parent['children'] = obj;
+                    }
+                    parent['children'].push(mydata[i]);
+                    delete mydata[i];
+                }
+            }
+
+            var temp=[];
+            for(var i=0;i<mydata.length;i++){
+                if(typeof (mydata[i])!='undefined'){
+                    temp.push(mydata[i]);
+                }
+            }
+
+            return temp;
+        }
+    });
+
+
+    function showDocumentInfo(name,docname){
+        var showDocument = document.getElementById('showDocument');
+        var showSegment = document.getElementById('showSegment');
+        var showMyDoc = document.getElementById('showMyDoc');
+        showDocument.setAttribute("class", "active");
+        showSegment.setAttribute("class", "");
+        showMyDoc.setAttribute("class", "");
+
+        var home = document.getElementById('home');
+        var profile = document.getElementById('profile');
+        var myDoc = document.getElementById('myDoc');
+        home.className = "tab-pane active";
+        profile.className = "tab-pane";
+        myDoc.className = "tab-pane";
         //创建request对象
         var request = new XMLHttpRequest();
         //
@@ -112,150 +442,17 @@
                 ul.appendChild(li);
                 element.appendChild(ul);
             }
-
-
         }
 
         function fail(code) {
-            var textarea = document.getElementById('profile');
+            var textarea = document.getElementById('home');
             textarea.innerText = 'Error code: ' + code;
         }
-    });
-</script>
-<script>
-
-    var myTreeData = [{
-        title: '1.0 建设项目概况',
-        url: 'http://zui.sexy',
-        open: true,
-        children: [
-            { title: '1.1 环境影响评价项目的由来' },
-            {title: '1.3 编制环境影响报告书的目的'},
-            {title: '1.4 编制依据'},
-            {title: '1.5 评价标准'},
-            {title: '1.6 评价范围'}
-        ]
-    }, {
-        title: '2.0 环境概况',
-        children: [
-            { title: '2.1 建设规模' },
-            { title: '2.2 生产工艺简介' },
-            { title: '2.3 原料、燃料及用水量' },
-            { title: '2.4 污染物排放情况' },
-            { title: '2.5 污染控制及环境保护目标' },
-            { title: '2.6 拟采取的环保措施' }
-        ]
-    }, {
-        title: '3.0 污染源调查与评价',
-        children: [
-            { title: '3.1 自然环境状况调查' },
-            { title: '3.2 评价区内环境质量现状调查' },
-            { title: '3.3 工程环境影响因素分析' },
-            { title: '3.4 社会环境状况调查' }
-        ]
-    }, {
-        title: '4.0 环境影响预测与评价'
-    }, {
-        title: '5.0 环保措施的可行性及经济技术论证',
-    },{
-        title:'6.0 环境影响经济损益简要分析',
-        children:[
-            { title:'6.1 大气污染防治'},
-            { title:'6.2 废水治理'},
-            { title:'6.3 废渣处理'},
-            { title:'6.4 减振防噪'},
-            { title:'6.5 绿化'}
-        ]
-    },{
-        title:'7.0 实施环境监测的建议'
-    },{
-        title:'8.0 结论',
-    },{
-        title:'9.0 附件、附图及参考文献'
-    }];
-
-    // 初始化选项中定义构造器回调函数
-    $('#sidebar-content').tree({
-        data:myTreeData,
-        itemCreator: function ($li, item) {
-            $li.append($('<a/>', { href: '#'}).text(item.title).prepend($('<i/>',{class:"icon icon-file"})));
-            // return false; // 如果要忽略当前节点，可以通过返回 false 来实现
-        }
-    })
-    var list=document.getElementById('sidebar-content');
-    var li=list.getElementsByTagName('a');
-    for(var i=0;i<li.length;i++)
-    {
-        li[i].onclick=function(){
-            showinfo(this.innerText);
-        }
-
     }
-
-
-
-    function showinfo(id){
-        var right_tab=document.getElementById('myTabs');
-        var home=document.getElementById('home');
-        var profile=document.getElementById('profile');
-        right_tab.firstElementChild.className="";
-        right_tab.lastElementChild.className="active";
-        home.className="tab-pane";
-        profile.className="tab-pane active";
-
-        //创建request对象
-        var request = new XMLHttpRequest();
-        //
-        // 发送请求:
-        request.open('GET', '/segments/'+id,true);
-        //注册相关事件回调处理函数
-        request.onreadystatechange=function () {
-            if (request.readyState === 4) { // 成功完成
-                // 判断响应结果:
-                if (request.status === 200) {
-                    // 成功，通过responseText拿到响应的文本:
-                    return success(request.responseText);
-                } else {
-                    // 失败，根据响应码判断失败原因:
-                    return fail(request.status);
-                }
-            } else {
-                // HTTP请求还在继续...
-            }
-        }
-        request.send();
-
-        function success(text) {
-            var jsonData=JSON.parse(text);
-            var element = document.getElementById('profile');
-            element.innerHTML=null;
-            for(var i=0;i<jsonData.length;i++){
-                var json=jsonData[i];
-                var project_name=json.project_name;
-                var segmentContent=json.segmentContent;
-                var div1=document.createElement("div");
-                div1.setAttribute("class","panel");
-                var div2=document.createElement("div");
-                div2.setAttribute("class","panel-heading");
-                var div3=document.createElement("div");
-                div3.setAttribute("class","panel-body");
-                div3.innerHTML=segmentContent;
-                var a1=document.createElement("a");
-                //  a1.setAttribute("class","am-text-truncate");
-                a1.innerHTML=project_name;
-                div2.appendChild(a1);
-                div1.appendChild(div2);
-                div1.appendChild(div3);
-                element.appendChild(div1);
-            }
-        }
-        function fail(code) {
-            var textarea = document.getElementById('profile');
-            textarea.innerText = 'Error code: ' + code;
-        }
-    };
-
+    $(showDocumentInfo(name,docname));
 </script>
+
+<!--上传功能-->
 <script>
     $(document).ready(function () {
 
@@ -293,6 +490,7 @@
 
     }
 </script>
+
 
 </body>
 

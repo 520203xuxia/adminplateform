@@ -1,10 +1,7 @@
 package cn.edu.szu.bigdata.controller;
 
-import cn.edu.szu.bigdata.entity.FragmentEntity;
 import cn.edu.szu.bigdata.entity.ReportEntity;
-import cn.edu.szu.bigdata.entity.SegmentEntity;
 import cn.edu.szu.bigdata.model.User;
-import cn.edu.szu.bigdata.service.DocumentService;
 import cn.edu.szu.bigdata.service.ReportService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -20,8 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static cn.edu.szu.bigdata.service.GridFsService.*;
 import static cn.edu.szu.bigdata.util.CommonUtils.getHash256;
@@ -36,8 +31,6 @@ import static cn.edu.szu.bigdata.util.constant.getOffice_online_addr;
 @Controller
 public class DocumentController {
 
-    @Autowired
-    DocumentService documentService;
 
     @Autowired
     ReportService reportService;
@@ -50,11 +43,12 @@ public class DocumentController {
     public String getEditPage(Model model, HttpServletRequest request){
         HttpSession session=request.getSession();
         User user=(User)session.getAttribute("userSession");
-        String cmbProvince=request.getParameter("cmbProvince");
-        String cmbCity=request.getParameter("cmbCity");
-        String domain=request.getParameter("domain");
+        String project_province=request.getParameter("project_province");
+        String project_city=request.getParameter("project_city");
+        String type_name=request.getParameter("type_name");
         String project_name=request.getParameter("project_name");
-        ReportEntity reportEntity=new ReportEntity(project_name,cmbProvince,cmbCity,domain,user.getUsername());
+        org.apache.log4j.Logger.getLogger(getClass()).info("项目名称:"+project_name+"省份:"+project_province+"城市:"+project_city+"领域:"+type_name);
+        ReportEntity reportEntity=new ReportEntity(project_name,project_province,project_city,type_name,user.getUsername());
         String filenameMd5 = createNewEmptyDocFileToGridFs(project_name, defalutContentType,user.getUsername());
         reportEntity.setId(filenameMd5);
         if(reportService.selectReportById(filenameMd5)!=null){
@@ -65,6 +59,20 @@ public class DocumentController {
         model.addAttribute("office_online_addr",getOffice_online_addr());
         model.addAttribute("reportEntity",reportEntity);
         model.addAttribute("user",user);
+        return "edit";
+    }
+
+    @GetMapping("/page/{id}")
+    public String getEditPageById(Model model,@PathVariable("id") String id,HttpServletRequest request){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        ReportEntity reportEntity=reportService.selectReportById(id);
+        if(reportEntity!=null&&checkFileisExist(id)){
+            model.addAttribute("filenameMd5",id);
+            model.addAttribute("office_online_addr",getOffice_online_addr());
+            model.addAttribute("reportEntity",reportEntity);
+            model.addAttribute("user",user);
+        }
         return "edit";
     }
 
@@ -99,7 +107,7 @@ public class DocumentController {
             metaData.put("filename",filename);
             metaData.put("username",user.getUsername());
             updateFileToGridFs(filenameMd5,defalutContentType,metaData,file.getBytes());
-            return new ResponseEntity("文件浏览："+getOffice_online_addr()+"/wopi/files/"+filenameMd5,HttpStatus.OK);
+            return new ResponseEntity("上传成功",HttpStatus.OK);
         }
     }
 
@@ -138,29 +146,6 @@ public class DocumentController {
     }
 
 
-    /**
-     * 处理post请求，点击提纲中的标题，提交了，provicne,city,project_name,title_id
-     * 返回最相似的5个段落
-     */
-    @GetMapping("/segments/{id}")
-    @ResponseBody
-    public List<FragmentEntity> getSegmentList(@PathVariable("id") String id){
-        List<FragmentEntity> fragmentEntityList=new ArrayList<>();
-        FragmentEntity fragmentEntity=new FragmentEntity();
-        fragmentEntity.setProjectName("测试.pdf");
-        fragmentEntity.setSegmentName("test"+id);
-        fragmentEntity.setSegmentContent("test"+id);
-
-        FragmentEntity fragmentEntity1=new FragmentEntity();
-        fragmentEntity1.setProjectName("测试1.pdf");
-        fragmentEntity1.setSegmentName("test1"+id);
-        fragmentEntity1.setSegmentContent("test1"+id);
-
-        fragmentEntityList.add(fragmentEntity);
-        fragmentEntityList.add(fragmentEntity1);
-        return fragmentEntityList;
-    }
-
 
     /**
      * 显示文档内容页面
@@ -197,17 +182,5 @@ public class DocumentController {
             e.printStackTrace();
             return null;
         }
-    }
-
-
-    @GetMapping("/segments")
-    @ResponseBody
-    public List<SegmentEntity> getAllSegmentName(){
-        return documentService.getAllSegmentName();
-    }
-
-    @GetMapping("/test")
-    public String test(){
-        return "edit";
     }
 }

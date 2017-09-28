@@ -2,7 +2,6 @@ package cn.edu.szu.bigdata.service;
 
 import cn.edu.szu.bigdata.config.MongoConfig;
 import cn.edu.szu.bigdata.entity.DocEntity;
-import cn.edu.szu.bigdata.entity.ReportEntity;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
@@ -100,6 +99,7 @@ public class GridFsService {
      */
     public static void deleteFileFromGridFs(String fileName){
         if(checkFileisExist(fileName)){
+            System.out.println("删除文件："+fileName);
             gridFS.remove(fileName);
         }
         else{
@@ -295,12 +295,12 @@ public class GridFsService {
 
     public static void main(String[] args) throws IOException{
 //        createNewEmptyDocFileToGridFs("test","docx");
-        String dir="E:\\pdfdoc";
-        File file=new File(dir);
-        File flist[] = file.listFiles();
-
-        for (File f:flist
-             ) {
+//        String dir="E:\\pdfdoc";
+        File f=new File("E:\\pdfdoc\\北京南山通达养殖场生猪养殖项目环境影响评价报告表全本公示.pdf");
+//        File flist[] = file.listFiles();
+//
+//        for (File f:flist
+//             ) {
             byte[] content=readFileByBytes(f);
             String sha256=getHash256(content);
             String filenameMd5=getMd5(f.getName())+".pdf";
@@ -312,7 +312,11 @@ public class GridFsService {
             gridFSInputFile.setContentType("pdf");
             gridFSInputFile.setMetaData(metaData);
             gridFSInputFile.save();
-        }
+//        }
+//
+        String filename="北京南山通达养殖场生猪养殖项目环境影响评价报告表全本公示.pdf";
+        String filenameMd51=getMd5(filename)+".pdf";
+        System.out.println(checkFileisExist(filenameMd51));
 
     }
 }

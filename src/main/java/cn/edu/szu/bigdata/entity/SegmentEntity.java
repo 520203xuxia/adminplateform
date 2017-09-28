@@ -1,48 +1,24 @@
 package cn.edu.szu.bigdata.entity;
 
+import com.alibaba.druid.filter.AutoLoad;
+import lombok.*;
+
 import java.io.Serializable;
+import java.sql.Date;
 
 /**
- * Created by longhao on 2017/8/29.
+ * Created by longhao on 2017/9/27.
  * Email: longhao1@email.szu.edu.cn
  */
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class SegmentEntity implements Serializable {
-    /**
-     * 段落编号
-     */
-    float id;
-
-    /**
-     * 段落名称
-     */
+    int id;
+    int project_id;
     String segment_name;
-
-    /**
-     * 段落填写简介
-     */
-    String segment_desc;
-
-    public float getId() {
-        return id;
-    }
-
-    public void setId(float id) {
-        this.id = id;
-    }
-
-    public String getSegment_name() {
-        return segment_name;
-    }
-
-    public void setSegment_name(String segment_name) {
-        this.segment_name = segment_name;
-    }
-
-    public String getSegment_desc() {
-        return segment_desc;
-    }
-
-    public void setSegment_desc(String segment_desc) {
-        this.segment_desc = segment_desc;
-    }
+    String segment_content;
+    String project_name;
 }

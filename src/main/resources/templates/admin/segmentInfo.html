@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 
 <head>
-    <title>资源管理</title>
+    <title>段落信息管理</title>
     <div th:replace="common/common::head"></div>
 </head>
 
@@ -14,19 +14,19 @@
     <div class="col-lg-9 col-md-12 col-sm-12" style="height:100%" id="content">
         <ol class="breadcrumb">
             <li><i class="icon-home"></i><a href="/index">  主页</a></li>
-            <li class="active">资源表</li>
+            <li class="active">段落信息表</li>
         </ol>
         <hr/>
         <div class="container-fluid">
             <div class="panel">
                 <div class="panel-heading">
-                    <i class="icon-th"> 资源列表</i>
+                    <i class="icon-th"> 段落信息列表</i>
                 </div>
                 <hr/>
                 <div>
                     <form class="form-inline">
-                        <button type="button" shiro:hasPermission="/resources/add" onclick="$('#resourcesModal').modal();" class="btn btn-primary" style="float: right; margin-right: 1px;">新增</button>
-                        <button type="button" shiro:hasPermission="/resources/delete" onclick="delById();" class="btn btn-primary" style="float: right; margin-right: 1px;">删除</button>
+                        <button type="button" shiro:hasPermission="/segmentInfo/add" onclick="$('#segmentInfoModal').modal();" class="btn btn-primary" style="float: right; margin-right: 1px;">新增</button>
+                        <button type="button" shiro:hasPermission="/segmentInfo/delete" onclick="delById();" class="btn btn-primary" style="float: right; margin-right: 1px;">删除</button>
                     </form>
                     <table class="table table-bordered data-table" id="datatable" >
                         <thead>
@@ -35,11 +35,10 @@
                                 <input type="checkbox" class="checkall" />
                             </th>
                             <th>ID</th>
-                            <th>资源名称</th>
-                            <th>父资源</th>
-                            <th>资源链接</th>
+                            <th>父标题ID</th>
+                            <th>段落名称</th>
+                            <th>段落描述</th>
                             <th>资源类型</th>
-                            <th>排序</th>
                         </tr>
                         </thead>
                     </table>
@@ -50,43 +49,39 @@
 </div>
 
     <!--添加弹框-->
-    <div class="modal fade" id="resourcesModal" tabindex="-1" role="dialog" aria-labelledby="addroleLabel">
+    <div class="modal fade" id="segmentInfoModal" tabindex="-1" role="dialog" aria-labelledby="addRecordLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="addroleLabel">添加资源</h4>
+                    <h4 class="modal-title" id="addRecordLabel">添加段落信息</h4>
                 </div>
                 <div class="modal-body">
-                    <form id="resourcesForm">
+                    <form id="segmentInfoForm">
                         <div class="form-group">
-                            <label  class="control-label">资源名称:</label>
-                            <input type="text" class="form-control" name="name" id="name" placeholder="请输入资源名称"/>
+                            <label  class="control-label">段落信息名称:</label>
+                            <input type="text" class="form-control" name="segment_name" id="segment_name" placeholder="段落信息名称"/>
                         </div>
                         <div class="form-group">
-                            <label  class="control-label">父资源ID:</label>
-                            <input type="text" class="form-control" id="parentId" name="parentid"  placeholder="请输入父资源ID">
+                            <label  class="control-label">父标题ID:</label>
+                            <input type="text" class="form-control" id="parentId" name="parentid"  placeholder="请输入父标题ID">
                         </div>
                         <div class="form-group">
-                            <label  class="control-label">资源链接:</label>
-                            <input type="text" class="form-control" id="resUrl" name="resurl"  placeholder="请输入资源链接">
+                            <label  class="control-label">段落描述:</label>
+                            <input type="text" class="form-control" id="segment_content" name="segment_content"  placeholder="请输入段落描述">
                         </div>
                         <div class="form-group">
                             <label  class="control-label">资源类型:</label>
                             <select class="form-control" name="type" id="type" >
-                                <option value="1">菜单</option>
-                                <option value="2">按钮</option>
+                                <option value="1">一级标题</option>
+                                <option value="2">二级标题</option>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">排序:</label>
-                            <input type="text" class="form-control" id="sort" name="sort"  placeholder="请输入排序">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" onclick="addResources();" class="btn btn-primary">Save</button>
+                    <button type="button" onclick="addSegmentInfo();" class="btn btn-primary">Save</button>
                 </div>
             </div>
         </div>
@@ -111,7 +106,7 @@
                 "serverSide": true,//开启服务器模式，使用服务器端处理配置datatable
                 "processing": true,//开启读取服务器数据时显示正在加载中……特别是大数据量的时候，开启此功能比较好
 
-                "ajax": '/resources',
+                "ajax": '/segmentInfo',
                 "columns": [
                     {
                         "sClass": "text-center",
@@ -122,11 +117,10 @@
                         "bSortable": false
                     },
                     { "data": "id" },
-                    { "data": "name" },
+                    { "data": "segment_name" },
                     { "data": "parentid" },
-                    { "data": "resurl" },
+                    { "data": "segment_content" },
                     { "data": "type" },
-                    { "data": "sort" },
                 ],
                 columnDefs:[
                     { "orderable": false, "targets": 1 },
@@ -146,7 +140,6 @@
                         },
                         "targets": 5
                     },
-                    { "orderable": false, "targets": 6 }
                 ],
 
             } );
@@ -159,12 +152,11 @@
             table.ajax.reload();
         }
 
-        //添加用户
-        function addResources() {
-            var name = $("#name").val();
+        //添加段落标题信息
+        function addSegmentInfo() {
+            var name = $("#segment_name").val();
             var parentId = $("#parentId").val();
-            var resUrl = $("#resUrl").val();
-            var sort = $("#sort").val();
+            var segment_content = $("#segment_content").val();
 
             if(name == "" || name == undefined || name == null){
                 return layer.msg('资源名称不能为空', function(){
@@ -176,21 +168,15 @@
                     //关闭后的操作
                 });
             }
-            if(resUrl == "" || resUrl == undefined || resUrl == null){
+            if(segment_content == "" || segment_content == undefined || segment_content == null){
                 return layer.msg('资源链接不能为空', function(){
                     //关闭后的操作
                 });
             }
-            if(sort == "" || sort == undefined || sort == null){
-                return layer.msg('资源排序不能为空', function(){
-                    //关闭后的操作
-                });
-            }
-
             $.ajax({
                 cache: true,
                 type: "POST",
-                url:'/resources/add',
+                url:'/segmentInfo/add',
                 data:$('#resourcesForm').serialize(),// 你的formid
                 async: false,
                 success: function(data) {
@@ -218,13 +204,13 @@
                 layer.msg('一次只能修改一条数据');
                 return;
             }
-            layer.confirm('您确定要删除该资源吗？', {
+            layer.confirm('您确定要删除该记录吗？', {
                 btn: ['确认','取消'] //按钮
             }, function(){
                 $.ajax({
                     cache: true,
                     type: "POST",
-                    url:'/resources/delete',
+                    url:'/segmentInfo/delete',
                     data:{id:id},
                     async: false,
                     success: function(data) {

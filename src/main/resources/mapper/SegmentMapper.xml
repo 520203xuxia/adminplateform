@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.edu.szu.bigdata.mapper.DocumentMapper">
+<mapper namespace="cn.edu.szu.bigdata.mapper.SegmentMapper">
   <resultMap id="BaseResultMap" type="cn.edu.szu.bigdata.entity.SegmentEntity">
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="id" jdbcType="FLOAT" property="id" />
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="project_id" jdbcType="INTEGER" property="project_id"/>
     <result column="segment_name" jdbcType="VARCHAR" property="segment_name" />
-    <result column="segment_desc" jdbcType="VARCHAR" property="segment_desc" />
+    <result column="segment_content" jdbcType="VARCHAR" property="segment_content" />
+    <result column="project_name" jdbcType="VARCHAR" property="project_name" />
   </resultMap>
 
-  <select id="getSegmentEntitys" parameterType="int" resultType="cn.edu.szu.bigdata.entity.SegmentEntity">
-    select * from huanping_segment_info order by id
+  <select id="selectSegmentEntityBySegmentName" parameterType="String" resultType="cn.edu.szu.bigdata.entity.SegmentEntity">
+    select * from huanping_segment where segment_name=#{segment_name} limit 5
   </select>
 
-    <select id="getSegmentEntityByName" parameterType="String" resultType="cn.edu.szu.bigdata.entity.SegmentEntity">
-        select * from huanping_segment_info where segment_name=#{name}
+    <select id="selectSegmentEntityBySegmentNameAndProjectName" parameterType="String" resultType="cn.edu.szu.bigdata.entity.SegmentEntity">
+        select * from huanping_segment where segment_name=#{segment_name} and project_name=#{project_name}
     </select>
 </mapper>

@@ -1,12 +1,14 @@
 package cn.edu.szu.bigdata.controller;
 
 import cn.edu.szu.bigdata.entity.ReportEntity;
+import cn.edu.szu.bigdata.model.User;
 import cn.edu.szu.bigdata.service.GridFsService;
 import cn.edu.szu.bigdata.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -21,18 +23,19 @@ public class ReportController {
 
     /**
      * 获取用户所有报告
-     * @param username
-     * @return
+     * @return List<ReportEntity>
      */
-    @GetMapping("/report/{username}")
-    public List<ReportEntity> getCurrentUserAllDocument(@PathVariable("username") String username){
-        return reportService.getAllReports(username);
+    @GetMapping("/reports")
+    public List<ReportEntity> getCurrentUserAllDocument(HttpServletRequest request){
+        HttpSession session=request.getSession();
+        User user=(User)session.getAttribute("userSession");
+        return reportService.getAllReports(user.getUsername());
     }
 
     /**
      * 修改报告基本信息(不包括内容)
      */
-    @PostMapping("/report/update")
+    @PostMapping("/reports/update")
     public void updateReport(HttpServletRequest request){
         ReportEntity reportEntity=(ReportEntity)request.getAttribute("report");
         if(reportService.selectReportById(reportEntity.getId())!=null){
@@ -44,8 +47,9 @@ public class ReportController {
     /**
      * 删除报告(包括内容)
      */
-    @GetMapping("/report/{id}/delete")
+    @GetMapping("/reports/{id}/delete")
     public void deleteReport(@PathVariable("id") String id){
+        System.out.println("删除操作"+id);
         reportService.deleteReportById(id);//删除基本信息
         GridFsService.deleteFileFromGridFs(id);//删除文件内容
     }
@@ -55,7 +59,7 @@ public class ReportController {
      * @param id
      * @return
      */
-    @GetMapping("/report/{id}")
+    @GetMapping("/reports/{id}")
     public ReportEntity getReportById(@PathVariable("id") String id){
         return reportService.selectReportById(id);
     }
